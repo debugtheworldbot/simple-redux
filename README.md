@@ -1,11 +1,11 @@
-# 使用说明
+# Intro
 
-本项目是采用 [Vite](https://github.com/vitejs/vite#vite-) 搭建的，开发时的编译速度超快！
+build by [Vite](https://github.com/vitejs/vite#vite-) , it's fast!
 
-## 开发
+## development
 
-运行 `yarn dev` 或者 `npm run dev` 即可开始开发
+run `yarn dev` or `npm run dev`
 
-## 打包
+## build
 
-运行 `yarn build` 或者 `npm run build` 即可打包文件
+`yarn build` or `npm run build`
