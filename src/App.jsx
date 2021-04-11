@@ -1,27 +1,6 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 
 const appContext = React.createContext(null)
-export const App = () => {
-  const [appState, setAppState] = useState({
-    user: {name: 'frank', age: 18}
-  })
-  const contextValue = {appState, setAppState}
-  return (
-    <appContext.Provider value={contextValue}>
-      <大儿子/>
-      <二儿子/>
-      <幺儿子/>
-    </appContext.Provider>
-  )
-}
-const 大儿子 = () => <section>大儿子<User/></section>
-const 二儿子 = () => <section>二儿子 <UserModifier/></section>
-const 幺儿子 = () => <section>幺儿子</section>
-const User = () => {
-  const contextValue = useContext(appContext)
-  return <div>User:{contextValue.appState.user.name}</div>
-}
-
 const reducer = (state,{type,payload})=>{
   if(type === 'updateUser'){
     return {
@@ -36,21 +15,67 @@ const reducer = (state,{type,payload})=>{
   }
 }
 
-const connect = (Compenent)=>{
-  return (props)=>{
-    const {appState, setAppState} = useContext(appContext)
-    const dispach = (action)=>{
-      setAppState(reducer(appState,action))
+
+const store = {
+  state:{
+    user: {name: 'frank', age: 18}
+  },
+  setState:(newState)=>{
+    store.state = newState
+    store.linsteners.map(fn=>fn(store.state))
+  },
+  linsteners:[],
+  subscribe:(fn)=>{
+    store.linsteners.push(fn)
+    return ()=>{
+      const newList = store.linsteners.filter(f=>JSON.stringify(f)!==JSON.stringify(fn))
+      store.linsteners = newList
     }
-    return <Compenent {...props} dispach={dispach} appState={appState} />
   }
 }
-const _UserModifier = ({dispach,appState}) => {
+
+const connect = (Compenent)=>{
+  return (props)=>{
+    const {state, setState,subscribe} = useContext(appContext)
+    const [,update] = useState({})
+    const dispach = (action)=>{
+      setState(reducer(state,action))
+    }
+    useEffect(()=>{
+      subscribe(()=>update({}))
+    },[])
+    return <Compenent {...props} dispach={dispach} state={state} />
+  }
+}
+
+export const App = () => {
+  console.log('app');
+  return (
+    <appContext.Provider value={store}>
+      <大儿子/>
+      <二儿子/>
+      <幺儿子/>
+    </appContext.Provider>
+  )
+}
+
+const 大儿子 = () => <section>大儿子<User/></section>
+const 二儿子 = () => <section>二儿子 <UserModifier/></section>
+const 幺儿子 = () => <section>幺儿子</section>
+
+
+const User = connect(({state}) => {
+  return <div>User:{state.user.name}</div>
+})
+
+
+const _UserModifier = ({dispach,state}) => {
+  console.log('usermocidifer!');
   const onChange = (e) => {
     dispach({type:'updateUser',payload:{name:e.target.value}})
   }
   return <div>
-    <input value={appState.user.name}
+    <input value={state.user.name}
       onChange={onChange}/>
   </div>
 }
