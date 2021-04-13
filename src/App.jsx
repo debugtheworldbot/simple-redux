@@ -5,25 +5,33 @@ export const App = () => {
   console.log('app');
   return (
     <appContext.Provider value={store}>
-      <大儿子/>
-      <二儿子/>
-      <幺儿子/>
+      <Grandfather />
+      <Father />
+      <Son />
     </appContext.Provider>
   )
 }
 
-const 大儿子 = () => <section>大儿子<User/></section>
-const 二儿子 = () => <section>二儿子 <UserModifier/></section>
-const 幺儿子 = () => <section>幺儿子</section>
-
+const Grandfather = () => {
+  console.log('grandfather')
+  return (<section>Grandfather<User /></section>)
+}
+const Father = () => {
+  console.log('father')
+  return (<section>father <UserModifier /></section>)
+}
+const Son = () => {
+  console.log('son')
+  return (<section>son</section>)
+}
 
 const User = connect(({state}) => {
+  console.log('user')
   return <div>User:{state.user.name}</div>
 })
 
-
 const _UserModifier = ({dispach,state}) => {
-  console.log('usermocidifer!');
+  console.log('usermocidifer');
   const onChange = (e) => {
     dispach({type:'updateUser',payload:{name:e.target.value}})
   }
