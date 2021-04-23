@@ -1,5 +1,5 @@
 import React from 'react'
-import {connect,appContext,store} from './redux'
+import { connect, appContext, store } from './redux'
 
 export const App = () => {
   console.log('app');
@@ -20,26 +20,26 @@ const Father = () => {
   console.log('father')
   return (<section>father <UserModifier /></section>)
 }
-const Son = connect(state=>{
-  return {user:state.user}
-})(({user}) => {
+const Son = connect(state => {
+  return { team: state.team }
+})(({ team }) => {
   console.log('son')
-  return (<section>son user:{user.name}</section>)
+  return (<section>son team:{team.name}</section>)
 })
 
-const User = connect()(({state}) => {
+const User = connect()(({ state }) => {
   console.log('user')
   return <div>User:{state.user.name}</div>
 })
 
-const _UserModifier = ({dispach,state}) => {
+const _UserModifier = ({ dispach, state }) => {
   console.log('usermocidifer');
   const onChange = (e) => {
-    dispach({type:'updateUser',payload:{name:e.target.value}})
+    dispach({ type: 'updateUser', payload: { name: e.target.value } })
   }
   return <div>
     <input value={state.user.name}
-      onChange={onChange}/>
+      onChange={onChange} />
   </div>
 }
 const UserModifier = connect()(_UserModifier)
