@@ -20,12 +20,14 @@ const Father = () => {
   console.log('father')
   return (<section>father <UserModifier /></section>)
 }
-const Son = () => {
+const Son = connect(state=>{
+  return {user:state.user}
+})(({user}) => {
   console.log('son')
-  return (<section>son</section>)
-}
+  return (<section>son user:{user.name}</section>)
+})
 
-const User = connect(({state}) => {
+const User = connect()(({state}) => {
   console.log('user')
   return <div>User:{state.user.name}</div>
 })
@@ -40,5 +42,5 @@ const _UserModifier = ({dispach,state}) => {
       onChange={onChange}/>
   </div>
 }
-const UserModifier = connect(_UserModifier)
+const UserModifier = connect()(_UserModifier)
 

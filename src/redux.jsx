@@ -34,10 +34,11 @@ const reducer = (state,{type,payload})=>{
   }
 }
 
-export const connect = (Compenent)=>{
+export const connect = (selector)=>(Compenent)=>{
   return (props)=>{
     const {state, setState,subscribe} = useContext(appContext)
     const [,update] = useState({})
+    const data = selector?selector(state) : {state}
     const dispach = (action)=>{
       setState(reducer(state,action))
     }
@@ -47,6 +48,6 @@ export const connect = (Compenent)=>{
         clean()
       }
     },[])
-    return <Compenent {...props} dispach={dispach} state={state} />
+    return <Compenent {...props} {...data} dispach={dispach}/>
   }
 }
