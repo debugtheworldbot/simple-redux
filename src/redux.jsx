@@ -35,7 +35,15 @@ const reducer = (state, { type, payload }) => {
   }
 }
 
-// const
+const changed = (one, two) => {
+  let change = false
+  for (let k in one) {
+    if (one[k] !== two[k]) {
+      change = true
+    }
+  }
+  return change
+}
 
 export const connect = (selector) => (Compenent) => {
   return (props) => {
@@ -46,11 +54,14 @@ export const connect = (selector) => (Compenent) => {
       setState(reducer(state, action))
     }
     useEffect(() => {
-      const clean = subscribe(() => update({}))
-      return () => {
-        clean()
-      }
-    }, [])
+      const clean = store.subscribe(() => {
+        const newData = selector ? selector(store.state) : { state: store.state }
+        if (changed(data, newData)) {
+          update({})
+        }
+      })
+      return clean
+    }, [selector])
     return <Compenent {...props} {...data} dispach={dispach} />
   }
 }
