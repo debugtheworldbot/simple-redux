@@ -27,24 +27,30 @@ const Son = connect(state => {
   return (<section>son team:{team.name}</section>)
 })
 
-const User = connect()(({ state }) => {
+const userSelector = state => {
+  return { user: state.user }
+}
+const userDispatch = (dispatch) => {
+  return {
+    updateUser: (attrs) => dispatch({ type: 'updateUser', payload: attrs })
+  }
+}
+const connectToUser = connect(userSelector, userDispatch)
+
+const User = connectToUser(({ user }) => {
   console.log('user')
-  return <div>User:{state.user.name}</div>
+  return <div>User:{user.name}</div>
 })
 
-const _UserModifier = ({ updateUser, state }) => {
+const _UserModifier = ({ updateUser, user }) => {
   console.log('usermocidifer');
   const onChange = (e) => {
     updateUser({ name: e.target.value })
   }
   return <div>
-    <input value={state.user.name}
+    <input value={user.name}
       onChange={onChange} />
   </div>
 }
-const UserModifier = connect(null, (dispatch) => {
-  return {
-    updateUser: (attrs) => dispatch({ type: 'updateUser', payload: attrs })
-  }
-})(_UserModifier)
+const UserModifier = connectToUser(_UserModifier)
 
