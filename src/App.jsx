@@ -32,15 +32,19 @@ const User = connect()(({ state }) => {
   return <div>User:{state.user.name}</div>
 })
 
-const _UserModifier = ({ dispach, state }) => {
+const _UserModifier = ({ updateUser, state }) => {
   console.log('usermocidifer');
   const onChange = (e) => {
-    dispach({ type: 'updateUser', payload: { name: e.target.value } })
+    updateUser({ name: e.target.value })
   }
   return <div>
     <input value={state.user.name}
       onChange={onChange} />
   </div>
 }
-const UserModifier = connect()(_UserModifier)
+const UserModifier = connect(null, (dispatch) => {
+  return {
+    updateUser: (attrs) => dispatch({ type: 'updateUser', payload: attrs })
+  }
+})(_UserModifier)
 

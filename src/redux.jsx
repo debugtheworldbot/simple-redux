@@ -44,22 +44,23 @@ const changed = (one, two) => {
   return false
 }
 
-export const connect = (selector) => (Component) => {
+export const connect = (StateSelector, dispatcherSelector) => (Component) => {
   return (props) => {
-    const { state, setState, subscribe } = useContext(appContext)
-    const [, update] = useState({})
-    const data = selector ? selector(state) : { state }
     const dispatch = (action) => {
       setState(reducer(state, action))
     }
+    const { state, setState, subscribe } = useContext(appContext)
+    const [, update] = useState({})
+    const data = StateSelector ? StateSelector(state) : { state }
+    const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : { dispatch }
     useEffect(() => {
       return subscribe(() => {
-        const newData = selector ? selector(store.state) : {state: store.state}
+        const newData = StateSelector ? StateSelector(store.state) : { state: store.state }
         if (changed(data, newData)) {
           update({})
         }
       })
-    }, [selector])
-    return <Component {...props} {...data} dispach={dispatch} />
+    }, [StateSelector])
+    return <Component {...props} {...data} {...dispatcher} />
   }
 }
