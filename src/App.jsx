@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect, appContext, store } from './redux'
+import { connectToUser } from './connectors/connectToUser'
 
 export const App = () => {
   console.log('app');
@@ -26,16 +27,6 @@ const Son = connect(state => {
   console.log('son')
   return (<section>son team:{team.name}</section>)
 })
-
-const userSelector = state => {
-  return { user: state.user }
-}
-const userDispatch = (dispatch) => {
-  return {
-    updateUser: (attrs) => dispatch({ type: 'updateUser', payload: attrs })
-  }
-}
-const connectToUser = connect(userSelector, userDispatch)
 
 const User = connectToUser(({ user }) => {
   console.log('user')
