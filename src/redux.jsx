@@ -2,43 +2,33 @@ import React, {useContext, useEffect, useState} from 'react'
 
 export const appContext = React.createContext(null)
 
-export const store = {
-  state: {
-    user: { name: 'frank', age: 18 },
-    team: { name: 'A-team' }
-  },
+const store = {
+  state: undefined,
+  reducer: undefined,
   setState: (newState) => {
     store.state = newState
-    store.linsteners.map(fn => fn(store.state))
+    store.listeners.map(fn => fn(store.state))
   },
-  linsteners: [],
+  listeners: [],
   subscribe: (fn) => {
-    store.linsteners.push(fn)
+    store.listeners.push(fn)
     return () => {
-      const newList = store.linsteners.filter(f => JSON.stringify(f) !== JSON.stringify(fn))
-      store.linsteners = newList
+      const newList = store.listeners.filter(f => JSON.stringify(f) !== JSON.stringify(fn))
+      store.listeners = newList
     }
   }
 }
 
-const reducer = (state, { type, payload }) => {
-  if (type === 'updateUser') {
-    return {
-      ...state,
-      user: {
-        ...state.user,
-        ...payload
-      }
-    }
-  } else {
-    return state
-  }
+export const createStore = (reducer, initialState) => {
+  store.state = initialState
+  store.reducer = reducer
+  return store
 }
 
 const changed = (one, two) => {
   for (let k in one) {
     if (one[k] !== two[k]) {
-      return  true
+      return true
     }
   }
   return false
@@ -47,15 +37,15 @@ const changed = (one, two) => {
 export const connect = (StateSelector, dispatcherSelector) => (Component) => {
   return (props) => {
     const dispatch = (action) => {
-      setState(reducer(state, action))
+      setState(store.reducer(state, action))
     }
-    const { state, setState, subscribe } = useContext(appContext)
+    const {state, setState, subscribe} = useContext(appContext)
     const [, update] = useState({})
-    const data = StateSelector ? StateSelector(state) : { state }
-    const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : { dispatch }
+    const data = StateSelector ? StateSelector(state) : {state}
+    const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : {dispatch}
     useEffect(() => {
       return subscribe(() => {
-        const newData = StateSelector ? StateSelector(store.state) : { state: store.state }
+        const newData = StateSelector ? StateSelector(store.state) : {state: store.state}
         if (changed(data, newData)) {
           update({})
         }
