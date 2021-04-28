@@ -1,6 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react'
 
-export const appContext = React.createContext(null)
+const appContext = React.createContext(null)
+
+export const Provider = ({store, children}) => {
+  return (
+    <appContext.Provider value={store}>
+      {children}
+    </appContext.Provider>)
+}
 
 const store = {
   state: undefined,
@@ -54,3 +61,4 @@ export const connect = (StateSelector, dispatcherSelector) => (Component) => {
     return <Component {...props} {...data} {...dispatcher} />
   }
 }
+
