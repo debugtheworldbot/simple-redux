@@ -53,7 +53,7 @@ const User = connectToUser(({user}) => {
   return <div>User:{user.name}</div>
 })
 
-const _UserModifier = ({updateUser, user}) => {
+const UserModifier = connectToUser(({updateUser, user}) => {
   console.log('usermocidifer');
   const onChange = (e) => {
     updateUser({name: e.target.value})
@@ -62,6 +62,5 @@ const _UserModifier = ({updateUser, user}) => {
     <input value={user.name}
            onChange={onChange} />
   </div>
-}
-const UserModifier = connectToUser(_UserModifier)
+})
 
