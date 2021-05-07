@@ -9,27 +9,30 @@ export const Provider = ({store, children}) => {
     </appContext.Provider>)
 }
 let state
+let reducer
+let listeners = []
+const setState = (newState) => {
+  state = newState
+  listeners.map(fn => fn(state))
+}
 
 const store = {
-  getState:()=>state,
-  reducer: undefined,
-  setState: (newState) => {
-    state = newState
-    store.listeners.map(fn => fn(state))
+  getState: () => state,
+  dispatch: (action) => {
+    setState(reducer(state, action))
   },
-  listeners: [],
   subscribe: (fn) => {
-    store.listeners.push(fn)
+    listeners.push(fn)
     return () => {
-      const newList = store.listeners.filter(f => JSON.stringify(f) !== JSON.stringify(fn))
-      store.listeners = newList
+      const newList = listeners.filter(f => JSON.stringify(f) !== JSON.stringify(fn))
+      listeners = newList
     }
   }
 }
 
-export const createStore = (reducer, initialState) => {
+export const createStore = (_reducer, initialState) => {
   state = initialState
-  store.reducer = reducer
+  reducer = _reducer
   return store
 }
 
@@ -44,10 +47,7 @@ const changed = (one, two) => {
 
 export const connect = (StateSelector, dispatcherSelector) => (Component) => {
   return (props) => {
-    const dispatch = (action) => {
-      setState(store.reducer(state, action))
-    }
-    const {setState, subscribe} = useContext(appContext)
+    const {dispatch,subscribe} = useContext(appContext)
     const [, update] = useState({})
     const data = StateSelector ? StateSelector(state) : {state}
     const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : {dispatch}
