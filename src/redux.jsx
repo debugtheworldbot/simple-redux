@@ -8,13 +8,14 @@ export const Provider = ({store, children}) => {
       {children}
     </appContext.Provider>)
 }
+let state
 
 const store = {
-  state: undefined,
+  getState:()=>state,
   reducer: undefined,
   setState: (newState) => {
-    store.state = newState
-    store.listeners.map(fn => fn(store.state))
+    state = newState
+    store.listeners.map(fn => fn(state))
   },
   listeners: [],
   subscribe: (fn) => {
@@ -27,7 +28,7 @@ const store = {
 }
 
 export const createStore = (reducer, initialState) => {
-  store.state = initialState
+  state = initialState
   store.reducer = reducer
   return store
 }
@@ -46,13 +47,13 @@ export const connect = (StateSelector, dispatcherSelector) => (Component) => {
     const dispatch = (action) => {
       setState(store.reducer(state, action))
     }
-    const {state, setState, subscribe} = useContext(appContext)
+    const {setState, subscribe} = useContext(appContext)
     const [, update] = useState({})
     const data = StateSelector ? StateSelector(state) : {state}
     const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : {dispatch}
     useEffect(() => {
       return subscribe(() => {
-        const newData = StateSelector ? StateSelector(store.state) : {state: store.state}
+        const newData = StateSelector ? StateSelector(state) : {state}
         if (changed(data, newData)) {
           update({})
         }
