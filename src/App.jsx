@@ -53,14 +53,27 @@ const User = connectToUser(({user}) => {
   return <div>User:{user.name}</div>
 })
 
-const UserModifier = connectToUser(({updateUser, user}) => {
-  console.log('usermocidifer');
+const fetch = (dispatch) => {
+  const ajax = (url) => new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('new user');
+    }, 1000)
+  })
+  ajax('/user').then(res => dispatch({type: 'updateUser', payload: {name: store.getState().user.name + res}}))
+}
+const UserModifier = connect(null, null)(({dispatch, state}) => {
+  console.log('userModifier');
+  const {name} = state.user
   const onChange = (e) => {
-    updateUser({name: e.target.value})
+    dispatch({type: 'updateUser', payload: {name: e.target.value}})
+  }
+  const onClick=()=> {
+    fetch(dispatch)
   }
   return <div>
-    <input value={user.name}
+    <input value={name}
            onChange={onChange} />
+    <button onClick={onClick}>fetch user</button>
   </div>
 })
 
