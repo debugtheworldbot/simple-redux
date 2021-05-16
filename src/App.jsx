@@ -68,7 +68,7 @@ const UserModifier = connect(null, null)(({dispatch, state}) => {
     dispatch({type: 'updateUser', payload: {name: e.target.value}})
   }
   const onClick=()=> {
-    fetch(dispatch)
+    dispatch(fetch)
   }
   return <div>
     <input value={name}

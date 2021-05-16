@@ -29,6 +29,16 @@ const store = {
     }
   }
 }
+let dispatch = store.dispatch
+const preDispatch = dispatch
+dispatch = (action)=>{
+  if(action instanceof Function){
+    action(dispatch)
+  }else {
+    preDispatch(action)
+  }
+}
+
 
 export const createStore = (_reducer, initialState) => {
   state = initialState
@@ -47,7 +57,7 @@ const changed = (one, two) => {
 
 export const connect = (StateSelector, dispatcherSelector) => (Component) => {
   return (props) => {
-    const {dispatch,subscribe} = useContext(appContext)
+    const {subscribe} = useContext(appContext)
     const [, update] = useState({})
     const data = StateSelector ? StateSelector(state) : {state}
     const dispatcher = dispatcherSelector ? dispatcherSelector(dispatch) : {dispatch}
