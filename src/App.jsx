@@ -53,12 +53,13 @@ const User = connectToUser(({user}) => {
   return <div>User:{user.name}</div>
 })
 
+const ajax = (url) => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve('new user');
+  }, 1000)
+})
+
 const fetch = (dispatch) => {
-  const ajax = (url) => new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('new user');
-    }, 1000)
-  })
   ajax('/user').then(res => dispatch({type: 'updateUser', payload: {name: store.getState().user.name + res}}))
 }
 const UserModifier = connect(null, null)(({dispatch, state}) => {
@@ -68,7 +69,8 @@ const UserModifier = connect(null, null)(({dispatch, state}) => {
     dispatch({type: 'updateUser', payload: {name: e.target.value}})
   }
   const onClick=()=> {
-    dispatch(fetch)
+    dispatch({type: 'updateUser', payload:ajax('/user').then(res =>{return {name:store.getState().user.name+res}})})
+    // dispatch(fetch)
   }
   return <div>
     <input value={name}

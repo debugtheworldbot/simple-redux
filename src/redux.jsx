@@ -31,11 +31,20 @@ const store = {
 }
 let dispatch = store.dispatch
 const preDispatch = dispatch
-dispatch = (action)=>{
-  if(action instanceof Function){
-    action(dispatch)
-  }else {
+dispatch = (action) => {
+  if (action instanceof Function) {
+    return action(dispatch)
+  } else {
     preDispatch(action)
+  }
+}
+
+const preDispatch2 = dispatch
+dispatch = (action) => {
+  if (action.payload instanceof Promise) {
+    action.payload.then(res=>dispatch({...action,payload:res}))
+  } else {
+    preDispatch2(action)
   }
 }
 
